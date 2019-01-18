@@ -1,0 +1,265 @@
+<style lang="scss">
+   #slider-container {
+        /*height: 100%;*/
+        width: 100%;
+        position: relative;
+        margin:0rpx 12rpx;
+    }
+
+    .slider-body {
+        height: 5rpx;
+        background-color: #B5B5B5;
+        position: relative;
+    }
+
+    .body {
+        bottom: 60rpx;
+        background-color: #0098ff;
+        height: 5rpx;
+        z-index: 0.3;
+    }
+
+    .left {
+        bottom: 58rpx;
+        z-index: 0.1;
+    }
+
+    .right {
+        z-index: 0.2;
+        bottom: 62rpx;
+    }
+
+    .slider-item {
+        border-radius: 50%;
+        width: 60rpx;
+        height: 60rpx;
+        background-color: #ffffff;
+        z-index: 2;
+        -moz-box-shadow:2px 3px 5px #cccccc;
+        -webkit-box-shadow:2px 3px 5px #cccccc;
+        box-shadow:2px 3px 5px #cccccc;
+    }
+
+    .min {
+        position: relative;
+        top: 29rpx;
+        /*left: 100rpx;*/
+    }
+
+    .max {
+        position: relative;
+        bottom: 31rpx;
+        /*left: 600rpx;*/
+    }
+
+    .hide{
+    display: none;
+    }
+</style>
+<template>
+    <view id="slider-container" class="{{hideOption}}">
+      <view class="slider-item min" style="left:{{leftValue}}rpx;background-color:{{blockColor}};" catchtouchmove="_minMove"></view>
+      <view class="slider-item max" style="left:{{rightValue}}rpx;background-color:{{blockColor}};" catchtouchmove="_maxMove"></view>
+      <view class="slider-body left" style="left:{{sliderLength}}rpx; width:{{leftValue}}rpx;background-color:{{backgroundColor}};"></view>
+      <view class="slider-body body" style="left:{{leftValue + 1}}rpx; width:{{rightValue-leftValue}}rpx;background-color:{{selectedColor}};"></view>
+      <view class="slider-body right" style="left:{{rightValue}}rpx; width:{{totalLength - rightValue}}rpx;background-color:{{backgroundColor}};"></view>
+    </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class WepySlider extends wepy.component {
+   props = {
+      mina: {
+        type: String
+      },/** 最小值*/
+
+      maxa: {
+        type: String
+      }, /** slider 最大值 */
+      /** 步进 （没做，有时间再说，项目里没用到撒） */
+      step: {
+        type: Number
+      },
+      /** 预选选择的小值*/
+      minValue: {
+        type: Number
+      },
+      /** 预选选择的大值 */
+      maxValue: {
+        type: Number
+      },
+      /** 滑块颜色 */
+      blockColor: {
+        type: String
+      },
+      /** 未选择进度条颜色 */
+      backgroundColor: {
+        type: String
+      },
+      /** 已选择进度条颜色 */
+      selectedColor: {
+        type: String
+      },
+
+      windowWidth: {
+        type: String
+      }
+
+    }
+
+    data = {
+      min: 0,
+      max: 100,
+      leftValue: 0,//左边圆点初始值
+      rightValue: 100,//右边圆点初始值
+      totalLength: 0,
+      bigLength: 0,
+      ratio: 0.5,
+      sliderLength: 39,
+      containerLeft: 0, //标识整个组件，距离屏幕左边的距离
+      hideOption: '', //初始状态为显示组件
+
+    }
+
+    /**
+          * 设置左边滑块的值
+          */
+    _propertyLeftValueChange() {
+
+      let minValue = this.minValue / this.maxa * this.bigLength
+      let min = this.mina / this.maxa * this.bigLength
+      this.leftValue = minValue - min;
+      this.$apply();
+    }
+
+    /**
+     * 设置右边滑块的值
+     */
+    _propertyRightValueChange() {
+      let right = this.maxValue / this.maxa * this.bigLength + this.sliderLength
+      this.rightValue = right + 20;
+      this.$apply();
+      console.log(this.rightValue);
+    }
+
+    methods = {
+
+      /**
+       * 左边滑块滑动
+       */
+      _minMove: function (e) {
+        let pagex = e.changedTouches[0].pageX / this.ratio - this.containerLeft - this.sliderLength / 2
+        if (pagex + this.sliderLength >= this.rightValue) {
+          pagex = this.rightValue - this.sliderLength;
+        } else if (pagex <= 0) {
+          pagex = 0;
+        };
+        this.leftValue = pagex;
+
+        // console.log(this.mina);
+        let lowValue = parseInt(pagex / this.bigLength * parseInt(this.maxa - this.mina) + this.mina)
+        var myEventDetail = { lowValue: lowValue }
+        // this.triggerEvent('lowValueChange', myEventDetail);
+        console.log(lowValue);
+        this.$emit('lowValueChange', myEventDetail)
+      },
+
+      /**
+       * 右边滑块滑动
+       */
+      _maxMove: function (e) {
+        // console.log(e);
+        let pagex = e.changedTouches[0].pageX / this.ratio - this.containerLeft - this.sliderLength / 2;
+        if (pagex <= this.leftValue + this.sliderLength) {
+          pagex = this.leftValue + this.sliderLength;
+        } else if (pagex >= this.totalLength) {
+          pagex = this.totalLength;
+        };
+        this.rightValue = pagex;
+
+        pagex = pagex - this.sliderLength;
+        let heighValue = parseInt(pagex / this.bigLength * (this.maxa - this.mina) + this.mina);
+        var myEventDetail = { heighValue: heighValue };
+        console.log(heighValue);
+        // this.triggerEvent('heighValueChange', myEventDetail)
+        this.$emit('heighValueChange', myEventDetail);
+      },
+
+      /**
+       * 隐藏组件
+       */
+      hide: ()=> {
+        this.hideOption = 'hide';
+      },
+      /**
+       * 显示组件
+       */
+      show: ()=> {
+        this.hideOption = '';
+      },
+      /**
+      * 重置
+      */
+      reset: ()=> {
+        this.rightValue = this.totalLength;
+        this.leftValue = 0;
+      },
+    }
+
+    /**
+   * 将小程序的API封装成支持Promise的API
+   * @params fn {Function} 小程序原始API，如wx.login
+   */
+    wxPromisify = (fn) => {
+      return function (obj = {}) {
+        return new Promise((resolve, reject) => {
+          obj.success = function (res) {
+            resolve(res)
+          }
+
+          obj.fail = function (res) {
+            reject(res)
+          }
+
+          fn(obj)
+        })
+      }
+    }
+
+
+    onLoad() {
+      console.log('slider', this.mina, this.maxa, this.maxValue, this.minValue);
+      // console.log(this.min);
+      const quer = wx.createSelectorQuery();//滑块元素
+      const query = wx.createSelectorQuery().in(this);
+
+      const getSystemInfo = this.wxPromisify(wx.getSystemInfo);
+      const queryContainer = this.wxPromisify(query.select("#slider-container").boundingClientRect);
+
+      this.wxPromisify(wx.getSystemInfo)().then(res => {//设备信息
+        console.log(res);
+        let ratio = res.windowWidth / 750;
+        this.ratio = ratio;
+
+
+      }).then(() => {
+        quer.select('#slider-container').boundingClientRect((rect) => {
+          console.log(rect);
+          this.totalLength = rect.width / this.ratio - this.sliderLength;
+          this.bigLength = rect.width / this.ratio - this.sliderLength * 2;
+          this.rightValue = rect.width / this.ratio - this.sliderLength;
+          this.containerLeft = rect.left / this.ratio;
+
+          /**
+         * 设置初始滑块位置
+         */
+          this._propertyLeftValueChange()
+          this._propertyRightValueChange()
+        }).exec()
+      });
+    };
+
+
+  }
+</script>

@@ -1,0 +1,134 @@
+<style lang="scss">
+  .slider-as {
+    margin: 0px 0px 50rpx 0px;
+  }
+
+  .slider-t {
+    float: left;
+    text-align: center;
+    width: 16.6%;
+    line-height: 2rpx;
+  }
+  .text-a{
+    text-align: center;
+  }
+  .button{
+    width: 200rpx;
+    margin-top: 20px;
+}
+</style>
+<template>
+<view  class="text-a">
+最小值：{{low}} -- 最大值：{{heigh}}
+</view>
+<wepySlider id="wepy-slider" :minValue.sync="low" :maxValue.sync="heigh" mina="0" maxa="100" :blockColor="#ffffff" :backgroundColor="#e9e9e9"
+  :selectedColor="#0098ff" bind:lowValueChange="lowValueChangeAction" bind:heighValueChange="heighValueChangeAction" />
+
+<view class="slider-as">
+  <text class="slider-t" wx:for="{{priceP}}" wx:key="{{index}}">
+    {{item.label}}
+  </text>
+</view>
+
+<view class="text-a">
+  最小值：{{low1}} -- 最大值：{{heigh1}}
+</view>
+<wepySlider id="wepy-slider1" :minValue.sync="low1" :maxValue.sync="heigh1" mina="0" maxa="10" :blockColor="#ffffff" :backgroundColor="#e9e9e9"
+  :selectedColor="#0098ff" bind:lowValueChange="lowValueChangeAction1" bind:heighValueChange="heighValueChangeAction1" />
+
+<view class="slider-as">
+  <text class="slider-t" wx:for="{{price}}" wx:key="{{index}}">
+    {{item.label}}
+  </text>
+</view>
+
+<button class='button' @tap='hideSlider'>隐藏</button>
+<button class='button' @tap='showSlider'>显示</button>
+<button class='button' @tap='resetSlider'>重置</button>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import Panel from '@/components/panel' // alias example
+  import wepySlider from '../components/wepy-slider';
+
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '双向滑动slider'
+    }
+    components = {
+      panel: Panel,
+      wepySlider: wepySlider
+    }
+
+    mixins = []
+
+    data = {
+      priceP: [{ value: "0", label: "0" }, { value: "1", label: "20" }, { value: "2", label: "40" }, { value: "3", label: "60" }, { value: "4", label: "80" }, { value: "5", label: "100" }],
+      low: 0,
+      heigh: 100,
+      low1: 2,
+      heigh1: 7,
+      price: [{ value: "0", label: "0" }, { value: "1", label: "2" }, { value: "2", label: "4" }, { value: "3", label: "6" }, { value: "4", label: "8" }, { value: "5", label: "10" }],
+    }
+
+    computed = {
+    }
+
+    methods = {
+      lowValueChangeAction:  (e)=> {
+        this.low = e.detail.lowValue;
+        console.log('low', e.detail.lowValue);
+        this.$apply();
+      },
+      heighValueChangeAction: (e)=> {
+        console.log('heigh', e.detail.heighValue)
+        this.heigh = e.detail.heighValue;
+        console.log(this.heigh);
+        this.$apply();
+      },
+      lowValueChangeAction1: (e) => {
+          this.low1 = e.detail.lowValue;
+          console.log('low1', e.detail.lowValue);
+          this.$apply();
+        },
+        heighValueChangeAction1: (e) => {
+          console.log('heigh1', e.detail.heighValue)
+          this.heigh1 = e.detail.heighValue;
+          this.$apply();
+        },
+       hideSlider: (e)=> {
+          this.selectComponent("#wepy-slider").hide();
+          this.selectComponent("#wepy-slider1").hide();
+        },
+
+        showSlider: (e)=> {
+          this.selectComponent("#wepy-slider").show();
+          this.selectComponent("#wepy-slider1").show();
+        },
+        resetSlider: (e) => {
+          this.selectComponent("#wepy-slider").reset();
+          this.selectComponent("#wepy-slider1").reset();
+        },
+      counterEmit (...args) {
+        let $event = args[args.length - 1]
+        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
+      }
+    }
+
+    events = {
+      'myEventDetail': (data) => {
+
+        console.log(data)
+      }
+    }
+
+    onLoad() {
+
+    }
+
+  }
+</script>
