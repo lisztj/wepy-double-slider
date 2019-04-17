@@ -42,9 +42,9 @@
   </text>
 </view>
 
-<button class='button' @tap='hideSlider'>隐藏</button>
+<!-- <button class='button' @tap='hideSlider'>隐藏</button>
 <button class='button' @tap='showSlider'>显示</button>
-<button class='button' @tap='resetSlider'>重置</button>
+<button class='button' @tap='resetSlider'>重置</button> -->
 
 </template>
 
