@@ -232,10 +232,10 @@
       console.log('slider', this.mina, this.maxa, this.maxValue, this.minValue);
       // console.log(this.min);
       const quer = wx.createSelectorQuery();//滑块元素
-      const query = wx.createSelectorQuery().in(this);
+      const query = wx.createSelectorQuery().in(this);///wx.createSelectorQuery().in(this).select(".container").boundingClientRect;
 
       const getSystemInfo = this.wxPromisify(wx.getSystemInfo);
-      const queryContainer = this.wxPromisify(query.select("#slider-container").boundingClientRect);
+      const queryContainer = this.wxPromisify(wx.createSelectorQuery().in(this));
 
       this.wxPromisify(wx.getSystemInfo)().then(res => {//设备信息
         console.log(res);
