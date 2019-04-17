@@ -9,7 +9,7 @@ wepy框架微信小程序双向滑动slider
 
 <img src="wepydbslider.gif" />
 
-用wepy框架改写了原生的插件
+用wepy框架改写了原生的组件
 
 因为不熟悉 SelectorQuery wx.createSelectorQuery()微信小程序的选择器
 
