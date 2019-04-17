@@ -1,7 +1,7 @@
 # wepy-double-slider
 wepy框架微信小程序双向滑动slider
 微信小程序双向滑动slider，可用于价格范围选取等功能。
-<img src="wepydbslider.gif" height = "100" />
+<img src="wepydbslider.gif" />
 
 
 参考 [weixianlove/zy-slider](https://github.com/weixianlove/zy-slider)
